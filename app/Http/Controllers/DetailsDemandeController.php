@@ -20,15 +20,23 @@ class DetailsDemandeController extends Controller
         ->join('niveaux', 'demandes.niveau_id', '=', 'niveaux.id')
         ->join('typedemandes', 'demandes.typedemande_id', '=', 'typedemandes.id')
         ->join('pays', 'demandes.pays_id', '=', 'pays.id')
-        ->join('documents', 'documents.demande_id', '=', 'demandes.id')
+        //->join('documents', 'documents.demande_id', '=', 'demandes.id')
+       ->join('exercices', 'demandes.exercice_id', '=', 'exercices.id')
         ->select('demandes.*','users.*','universites.codeUniv','etablissements.codeEtab',
-            'specialites.libelleSpec','niveaux.libelleNiv','typedemandes.libelleType','pays.libellePays','documents.nomDoc','documents.chemin')
+            'specialites.libelleSpec','niveaux.libelleNiv','typedemandes.libelleType','pays.libellePays',
+            'exercices.libelleExer')
         ->first();
+
+        $documents = DB::table('documents')
+        ->where('demande_id','=', $id)
+        ->get();
+
 
         if($details) {
             return response()->json([
                 'statut' => 200,
-                'message' => $details
+                'message' => $details,
+                'docs' => $documents
             ], 200);
         } else{
             return response()->json([

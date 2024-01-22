@@ -26,21 +26,34 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $fileName = $request->nom. time() . '.' . $request->file->extension();
-            $request->file->storeAs('public/images', $fileName);
+        if($request->file('files')){
 
-            $document = new Document();
-            $document->nom = '';
-            $document->chemin = $fileName;
-            $document->etat = true;
-            $document->demande_id = $request->demande_id;
-            $document->saveOrFail();
+            foreach($request->file('files') as $key => $file)
+          {
+              $ext = time().'.'.$file->extension();
+              $fileName = time().$file->getClientOriginalName();
+              $path = public_path('upload');
+              $file->move($path, $ext);
 
-        } catch (\Exception $ex){
-            return response()->json($ex->getMessage());
+              $document = new Document();
+              $document->nomDoc = $fileName;
+              $document->chemin = $file;
+              $document->etat = true;
+              $document->demande_id = $request->demande_id;
+              $document->saveOrFail();
+          }
+          }
+          if($document){
+            return response()->json([
+                'statut' => 200,
+                'message' => 'Création document réussie'
+            ], 200);
+        } else {
+            return response()->json([
+                'statut' => 500,
+                'message' => 'Echec lors de la récupération'
+            ], 500);
         }
-        return response()->json($document, 200);
 
     }
 

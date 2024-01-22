@@ -24,7 +24,7 @@ class SuivieDemandeController extends Controller
         ->join('pays', 'demandes.pays_id', '=', 'pays.id')
         ->where('demandes.user_id', '=', 2)
         ->select('demandes.*','typedemandes.libelleType','universites.codeUniv','etablissements.codeEtab',
-                'specialites.libelleSpec','niveaux.libelleNiv','pays.libellePays')
+                'specialites.libelleSpec','niveaux.libelleNiv','pays.libellePays','exercices.libelleExer')
         ->get();
 
         if($demandes) {

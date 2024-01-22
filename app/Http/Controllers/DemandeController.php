@@ -44,8 +44,8 @@ class DemandeController extends Controller
      */
     public function store(Request $request)
     {
-        //$user = Auth::user();
-            $request->validate([
+        //return response()->json($request);
+        $request->validate([
                 //'statut' => 'required',
                 //'etat' => 'required',
                 'paysdem' => 'required',
@@ -56,9 +56,8 @@ class DemandeController extends Controller
                 'niveau' => 'required',
                 'exercice' => 'required',
                 'user' => 'required',
-                'typeFiles' => 'required'
+                'files' => 'required|mimes:pdf|max:1024'
             ]);
-
 
             $demande = new Demande();
             //$demande->statut = $request->statut;
@@ -73,22 +72,23 @@ class DemandeController extends Controller
             $demande->user_id = $request->user;
             $demande->saveOrFail();
 
-            if($request->has('typeFiles'))
-            $files = $request->typeFiles;
+            if($request->file('files')){
 
-            foreach($files as $key => $value)
+              foreach($request->file('files') as $key => $file)
             {
-                $file = time().$key.$value->getClientOriginalExtension();
-                $namefile = $value->getClientOriginalName();
+                $ext = time().'.'.$file->extension();
+                $fileName = time().$file->getClientOriginalName();
                 $path = public_path('upload');
-                $value->move($file, $path);
+                $file->move($path, $ext);
+                //$files[]['name'] = $fileName;
 
                 $document = new Document();
-                $document->nomDoc = $namefile;
-                $document->chemin = $value;
+                $document->nomDoc = $fileName;
+                $document->chemin = $file;
                 $document->etat = true;
-                $document->demande_id = $demande->user_id;
+                $document->demande_id = $demande->id;
                 $document->saveOrFail();
+            }
             }
 
             if($demande){
