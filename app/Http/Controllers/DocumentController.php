@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
-use http\Env\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
@@ -21,6 +21,23 @@ class DocumentController extends Controller
         return response()->json($documents, 200 ?? null);
     }
 
+
+    public function downloadFile($nomFile){
+
+        $path = storage_path('app/public/documents/'.$nomFile);
+
+        if($path){
+            return response()->download($path);
+        } else {
+            return response()->json([
+                'statut' => 500,
+                'message' => 'Echec lors de la récupération'
+            ], 500);
+        }
+
+
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -30,10 +47,8 @@ class DocumentController extends Controller
 
             foreach($request->file('files') as $key => $file)
           {
-              $ext = time().'.'.$file->extension();
-              $fileName = time().$file->getClientOriginalName();
-              $path = public_path('upload');
-              $file->move($path, $ext);
+              $fileName = time().'.'.$file->extension();
+              $file->move(public_path('documents'), $fileName);
 
               $document = new Document();
               $document->nomDoc = $fileName;

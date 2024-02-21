@@ -49,10 +49,25 @@ class TypedemandeController extends Controller
             $typedemande = Typedemande::create($request->all());
             $typedemande->saveOrFail();
 
-        } catch (\Exception $ex){
-            return response()->json($ex->getMessage());
+            if($typedemande){
+                return response()->json([
+                    'statut' => 200,
+                    'message' => 'Création réussie'
+                ], 200);
+            } else {
+                return response()->json([
+                    'statut' => 500,
+                    'message' => 'Echec lors de la création'
+                ], 500);
+            }
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'result' => false,
+                'message' => $th->getMessage()
+            ], 500);
         }
-        return response()->json($typedemande, 200);
+        //return response()->json($typedemande, 200);
     }
 
     /**

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\DetailsDemandeController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\SpecialiteController;
 use App\Http\Controllers\SuivieDemandeController;
@@ -25,8 +27,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('pays', \App\Http\Controllers\PaysController::class);
+/** ---------Register and Login ----------- */
+Route::controller(RegisterController::class)->group(function()
+{
+    Route::post('register', 'register');
+    Route::post('login', 'login');
+    Route::get('users', 'index')->name('index');
 
+});
+
+Route::resource('pays', \App\Http\Controllers\PaysController::class);
 Route::resource('typedemande', \App\Http\Controllers\TypedemandeController::class);
 Route::resource('document', \App\Http\Controllers\DocumentController::class);
 Route::resource('demande', \App\Http\Controllers\DemandeController::class);
@@ -41,5 +51,6 @@ Route::get('universite/{id}/etablissements', [EtablissementController::class, 'g
 Route::get('etablissement/{id}/specialites', [SpecialiteController::class, 'getSpecialiteByEtab']);
 Route::get('suivie-demande', [SuivieDemandeController::class, 'getSuivieDemandes']);
 Route::get('demande/{id}/details', [DetailsDemandeController::class, 'getDetailsDemande']);
+Route::get('fichier/{nomFile}/download', [DocumentController::class, 'downloadFile']);
 
 Route::get('send-mail', [DemandeController::class, 'sendDemoMail']);

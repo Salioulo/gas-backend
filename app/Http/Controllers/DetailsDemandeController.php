@@ -22,7 +22,7 @@ class DetailsDemandeController extends Controller
         ->join('pays', 'demandes.pays_id', '=', 'pays.id')
         //->join('documents', 'documents.demande_id', '=', 'demandes.id')
        ->join('exercices', 'demandes.exercice_id', '=', 'exercices.id')
-        ->select('demandes.*','users.*','universites.codeUniv','etablissements.codeEtab',
+        ->select('demandes.created_at','demandes.statut','users.*','universites.codeUniv','etablissements.codeEtab',
             'specialites.libelleSpec','niveaux.libelleNiv','typedemandes.libelleType','pays.libellePays',
             'exercices.libelleExer')
         ->first();
@@ -32,7 +32,7 @@ class DetailsDemandeController extends Controller
         ->get();
 
 
-        if($details) {
+        if($details && $documents) {
             return response()->json([
                 'statut' => 200,
                 'message' => $details,

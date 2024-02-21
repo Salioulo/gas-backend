@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Universite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class UniversiteController extends Controller
 {
@@ -37,10 +38,17 @@ class UniversiteController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+       try{
+        $validate = Validator::make($request->all(),[
             'codeUniv' => 'required',
             'libelleUniv' => 'required'
         ]);
+        if($validate->fails()){
+            return response()->json([
+                'result' => false,
+                'message' => $validate->errors()
+            ], 401);
+        }
 
         $universite = new Universite();
 
@@ -56,9 +64,17 @@ class UniversiteController extends Controller
         } else {
             return response()->json([
                 'statut' => 500,
-                'message' => 'Echec lors de la récupération'
+                'message' => 'Echec lors de la création'
             ], 500);
         }
+
+       } catch (\Throwable $th) {
+            return response()->json([
+                'result' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+
     }
 
     /**

@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('universites', function (Blueprint $table) {
             $table->id();
-            $table->string('codeUniv')->Unique();
+            $table->string('codeUniv')->unique();
             $table->string('libelleUniv');
             $table->boolean('etat')->default(true);
             $table->timestamps();

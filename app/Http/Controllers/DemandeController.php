@@ -8,6 +8,8 @@ use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail as FacadesMail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\File;
 
 class DemandeController extends Controller
 {
@@ -56,7 +58,7 @@ class DemandeController extends Controller
                 'niveau' => 'required',
                 'exercice' => 'required',
                 'user' => 'required',
-                'files' => 'required|mimes:pdf|max:1024'
+                'files' => 'required'
             ]);
 
             $demande = new Demande();
@@ -76,15 +78,14 @@ class DemandeController extends Controller
 
               foreach($request->file('files') as $key => $file)
             {
-                $ext = time().'.'.$file->extension();
+                //$ext = time().'.'.$file->extension();
                 $fileName = time().$file->getClientOriginalName();
-                $path = public_path('upload');
-                $file->move($path, $ext);
-                //$files[]['name'] = $fileName;
+                //$path = public_path('upload');
+               $path = $file->storeAs('public/documents',$fileName);
 
                 $document = new Document();
                 $document->nomDoc = $fileName;
-                $document->chemin = $file;
+                $document->chemin = $path;
                 $document->etat = true;
                 $document->demande_id = $demande->id;
                 $document->saveOrFail();
